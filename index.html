@@ -1,99 +1,134 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>📦 Ultimate GUI 更新日志生成器</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ultimate GUI 更新日志生成器</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    :root {
-      --bg-dark: #1c1c1e;
-      --bg-container: #252527;
-      --text-main: #e0e0e0;
-      --accent-green: #3ba55d;
-      --input-bg: #2f2f31;
-      --border: #404041;
-    }
     body {
+      background-color: #1c1c1e;
+      color: #e0e0e0;
       font-family: 'Segoe UI', sans-serif;
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      padding: 20px;
-      margin: 0;
     }
-    h2 {
-      color: var(--accent-green);
+    .modrinth-card {
+      background-color: #252527;
+      border: 1px solid #3ba55d;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 0 0 1px #3ba55d20;
     }
-    input, button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      background-color: var(--input-bg);
-      border: 1px solid var(--border);
-      color: var(--text-main);
-      font-size: 1em;
-      border-radius: 4px;
-      box-sizing: border-box;
+    .modrinth-input {
+      background-color: #2f2f31;
+      border: 1px solid #404041;
+      color: #e0e0e0;
     }
-    button {
-      background-color: var(--accent-green);
-      color: #fff;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
+    .modrinth-button {
+      background-color: #3ba55d;
+      color: white;
     }
-    button:hover {
+    .modrinth-button:hover {
       background-color: #2c8e48;
-    }
-    #output {
-      margin-top: 20px;
-      background-color: var(--bg-container);
-      padding: 15px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      white-space: pre-wrap;
-    }
-    @media (max-width: 600px) {
-      body { padding: 10px; }
-      input, button { font-size: 0.9em; }
     }
   </style>
 </head>
-<body>
-  <h2>📦 Ultimate GUI 更新日志生成器</h2>
+<body class="min-h-screen px-4 py-6">
+  <div class="max-w-3xl mx-auto space-y-8">
 
-  <label for="zipInput">上传 .zip 文件：</label>
-  <input type="file" id="zipInput" accept=".zip">
+    <!-- 📂 文件结构展示 -->
+    <section class="modrinth-card">
+      <h2 class="text-2xl font-bold text-green-400 mb-4">📂 文件结构展示</h2>
+      <ul class="text-sm space-y-2">
+        <li><code>pack.mcmeta</code></li>
+        <li><code>README.TXT</code></li>
+        <li><code>assets/minecraft/textures/gui/container/inventory.png</code></li>
+        <li><code>assets/minecraft/lang/en_us.json</code></li>
+        <li><code>assets/shaders/core/position_tex.vsh</code></li>
+      </ul>
+    </section>
 
-  <label for="versionInput">版本号（如 v0.1.2）：</label>
-  <input type="text" id="versionInput" placeholder="例如：v0.1.2">
+    <!-- 📦 日志生成工具 -->
+    <section class="modrinth-card">
+      <h2 class="text-2xl font-bold text-green-400 mb-4">📦 更新日志生成器</h2>
+      <div class="space-y-4">
 
-  <label for="uploadCount">修订编号（第几次修订）：</label>
-  <input type="number" id="uploadCount" min="1" value="1">
+        <input type="text" id="fileNameInput" placeholder="文件名（例如 Ultimate-GUI-v0.1.2.zip）"
+          class="w-full px-3 py-2 rounded modrinth-input text-sm" />
 
-  <button onclick="generateLog()">✨ 生成日志</button>
+        <input type="text" id="versionInput" placeholder="版本号（例如 v0.1.2）"
+          class="w-full px-3 py-2 rounded modrinth-input text-sm" />
 
-  <h3>🧾 自动生成的更新日志：</h3>
-  <div id="output">（日志内容将显示在此）</div>
+        <input type="number" id="uploadCount" placeholder="修订编号" value="1" min="1"
+          class="w-full px-3 py-2 rounded modrinth-input text-sm" />
+
+        <div class="flex flex-col sm:flex-row gap-4">
+          <button onclick="generateLog()"
+            class="px-4 py-2 rounded modrinth-button text-sm w-full sm:w-auto">
+            ✨ 生成日志
+          </button>
+          <button onclick="exportMarkdown()"
+            class="px-4 py-2 rounded modrinth-button text-sm w-full sm:w-auto">
+            📄 导出 Markdown
+          </button>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-semibold mt-6 mb-2 text-green-300">🧾 自动生成的更新日志：</h3>
+          <pre id="output" class="bg-gray-800 p-4 rounded-lg text-sm whitespace-pre-wrap"></pre>
+
+          <h3 class="text-lg font-semibold mt-6 mb-2 text-green-300">📘 Markdown 格式：</h3>
+          <pre id="mdOutput" class="bg-gray-800 p-4 rounded-lg text-sm whitespace-pre-wrap"></pre>
+        </div>
+      </div>
+    </section>
+  </div>
 
   <script>
     function generateLog() {
-      const file = document.getElementById('zipInput').files[0];
-      const version = document.getElementById('versionInput').value.trim();
-      const uploadOrder = document.getElementById('uploadCount').value;
-      const today = new Date().toISOString().split('T')[0];
+      const version = document.getElementById("versionInput").value.trim();
+      const uploadOrder = document.getElementById("uploadCount").value;
+      const fileName = document.getElementById("fileNameInput").value.trim();
+      const today = new Date().toISOString().split("T")[0];
 
-      if (!file || !version) {
-        document.getElementById('output').innerText = '❗ 请上传文件并填写版本号';
+      if (!version || !fileName) {
+        document.getElementById("output").innerText =
+          "❗ 请填写文件名和版本号";
         return;
       }
 
       const logText = `📌 更新日志（${today}）
-- 📁 文件名：${file.name}
+- 📁 文件名：${fileName}
 - 🛠 版本号：${version}
 - 🧬 修订编号：第 ${uploadOrder} 次修订
 - 📝 内容说明：请填写版本更新内容，例如修复 GUI 显示或优化 pack.mcmeta 格式。
 `;
+      document.getElementById("output").innerText = logText;
+    }
 
-      document.getElementById('output').innerText = logText;
+    function exportMarkdown() {
+      const version = document.getElementById("versionInput").value.trim();
+      const uploadOrder = document.getElementById("uploadCount").value;
+      const fileName = document.getElementById("fileNameInput").value.trim();
+      const today = new Date().toISOString().split("T")[0];
+
+      if (!version || !fileName) {
+        document.getElementById("mdOutput").innerText =
+          "❗ 请填写文件名和版本号";
+        return;
+      }
+
+      const markdown = `## 📌 更新日志（${today}）
+
+**文件名**：\`${fileName}\`  
+**版本号**：\`${version}\`  
+**修订编号**：第 ${uploadOrder} 次修订  
+
+**内容说明**：  
+- 请填写版本更新内容，例如：  
+  - 修复 GUI 显示错误  
+  - 更新 pack.mcmeta 支持 1.21  
+  - 优化纹理加载速度`;
+      document.getElementById("mdOutput").innerText = markdown;
     }
   </script>
 </body>
