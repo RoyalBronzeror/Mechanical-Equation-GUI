@@ -1,119 +1,100 @@
-<!doctype html>
-<html lang="zh-CN">
-    <head>
-        <title>机械方程式 | [Mechanical Equation GUI]</title>
-    </head>
-    <body>
-        <button onclick="https://modrinth.com/resourcepack/mechanical-equation-gui-pack" class="Btn">
-   <svg class="svgIcon" viewBox="0 0 384 512" height="1em" xmlns="http://www.w3.org/2000/svg"><path d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 370.8 224 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"></path></svg>
-   <span class="icon2"></span>
-   <span class="tooltip">Download</span>
-        </button>
-        <div class="default"></div>
-        <style>
-            body{
-                background: linear-gradient(
-                    to right,
-                    #DA8E0AFF,
-                    #80B847FF
-                );
-            }
-            .default{
-                wight: 90%;
-                height: 100px;
-                background-color: #fff;
-                border-radius: 8px;
-                box-shadow: gray 0px 0px 24px
-            }
-            .Btn {
-  width: 50px;
-  height: 50px;
-  border: none;
-  border-radius: 50%;
-  background-color: rgb(27, 27, 27);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  position: relative;
-  transition-duration: .3s;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.11);
-}
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>📦 Ultimate GUI 更新日志生成器</title>
+  <style>
+    :root {
+      --bg-dark: #1c1c1e;
+      --bg-container: #252527;
+      --text-main: #e0e0e0;
+      --accent-green: #3ba55d;
+      --input-bg: #2f2f31;
+      --border: #404041;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      padding: 20px;
+      margin: 0;
+    }
+    h2 {
+      color: var(--accent-green);
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background-color: var(--input-bg);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      font-size: 1em;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: var(--accent-green);
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    button:hover {
+      background-color: #2c8e48;
+    }
+    #output {
+      margin-top: 20px;
+      background-color: var(--bg-container);
+      padding: 15px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      white-space: pre-wrap;
+    }
+    @media (max-width: 600px) {
+      body { padding: 10px; }
+      input, button { font-size: 0.9em; }
+    }
+  </style>
+</head>
+<body>
+  <h2>📦 Ultimate GUI 更新日志生成器</h2>
 
-.svgIcon {
-  fill: rgb(214, 178, 255);
-}
+  <label for="zipInput">上传 .zip 文件：</label>
+  <input type="file" id="zipInput" accept=".zip">
 
-.icon2 {
-  width: 18px;
-  height: 5px;
-  border-bottom: 2px solid rgb(182, 143, 255);
-  border-left: 2px solid rgb(182, 143, 255);
-  border-right: 2px solid rgb(182, 143, 255);
-}
+  <label for="versionInput">版本号（如 v0.1.2）：</label>
+  <input type="text" id="versionInput" placeholder="例如：v0.1.2">
 
-.tooltip {
-  position: absolute;
-  right: -105px;
-  opacity: 0;
-  background-color: rgb(12, 12, 12);
-  color: white;
-  padding: 5px 10px;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition-duration: .2s;
-  pointer-events: none;
-  letter-spacing: 0.5px;
-}
+  <label for="uploadCount">修订编号（第几次修订）：</label>
+  <input type="number" id="uploadCount" min="1" value="1">
 
-.tooltip::before {
-  position: absolute;
-  content: "";
-  width: 10px;
-  height: 10px;
-  background-color: rgb(12, 12, 12);
-  background-size: 1000%;
-  background-position: center;
-  transform: rotate(45deg);
-  left: -5%;
-  transition-duration: .3s;
-}
+  <button onclick="generateLog()">✨ 生成日志</button>
 
-.Btn:hover .tooltip {
-  opacity: 1;
-  transition-duration: .3s;
-}
+  <h3>🧾 自动生成的更新日志：</h3>
+  <div id="output">（日志内容将显示在此）</div>
 
-.Btn:hover {
-  background-color: rgb(150, 94, 255);
-  transition-duration: .3s;
-}
+  <script>
+    function generateLog() {
+      const file = document.getElementById('zipInput').files[0];
+      const version = document.getElementById('versionInput').value.trim();
+      const uploadOrder = document.getElementById('uploadCount').value;
+      const today = new Date().toISOString().split('T')[0];
 
-.Btn:hover .icon2 {
-  border-bottom: 2px solid rgb(235, 235, 235);
-  border-left: 2px solid rgb(235, 235, 235);
-  border-right: 2px solid rgb(235, 235, 235);
-}
+      if (!file || !version) {
+        document.getElementById('output').innerText = '❗ 请上传文件并填写版本号';
+        return;
+      }
 
-.Btn:hover .svgIcon {
-  fill: rgb(255, 255, 255);
-  animation: slide-in-top 0.6s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
-}
+      const logText = `📌 更新日志（${today}）
+- 📁 文件名：${file.name}
+- 🛠 版本号：${version}
+- 🧬 修订编号：第 ${uploadOrder} 次修订
+- 📝 内容说明：请填写版本更新内容，例如修复 GUI 显示或优化 pack.mcmeta 格式。
+`;
 
-@keyframes slide-in-top {
-  0% {
-    transform: translateY(-10px);
-    opacity: 0;
-  }
-
-  100% {
-    transform: translateY(0px);
-    opacity: 1;
-  }
-                }
-        </style>
-    </body>
+      document.getElementById('output').innerText = logText;
+    }
+  </script>
+</body>
 </html>
