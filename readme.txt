@@ -1,8 +1,9 @@
-作者：(author)
-@bilibili -皇家青铜绅士-
+浣滆�咃細(author)
+@bilibili -鐨囧闈掗摐楠戝＋-
 @github RoyalBronzeror
 @twitter Royal Bronzeror
-@curseforge Royal_Bronzeror
+@curseforge Royal_Bronzeror111
 @modrinth Royal_Bronzeror
-转载必须附上作者与原贴，禁止商业用途转载和发布
+杞浇蹇呴』闄勪笂浣滆�呬笌鍘熻创锛岀姝㈠晢涓氱敤閫旇浆杞藉拰鍙戝竷
+
 Reprint must be attached with the author and the original post, commercial reprint and publication are prohibited.
